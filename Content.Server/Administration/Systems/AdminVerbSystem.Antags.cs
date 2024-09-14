@@ -1,6 +1,7 @@
 using Content.Server.Administration.Commands;
 using Content.Server.Antag;
 using Content.Server.GameTicking.Rules.Components;
+using Content.Server.Roles;
 using Content.Server.Zombies;
 using Content.Shared.Administration;
 using Content.Shared.Database;
@@ -35,6 +36,9 @@ public sealed partial class AdminVerbSystem
 
     [ValidatePrototypeId<StartingGearPrototype>]
     private const string PirateGearId = "PirateGear";
+
+    [ValidatePrototypeId<EntityPrototype>]
+    private const string DefaultMalfRule = "Malf";
 
     // All antag verbs have names so invokeverb works.
     private void AddAntagVerbs(GetVerbsEvent<Verb> args)
@@ -151,5 +155,19 @@ public sealed partial class AdminVerbSystem
             Message = Loc.GetString("admin-verb-make-thief"),
         };
         args.Verbs.Add(thief);
+
+        Verb malf = new()
+        {
+            Text = Loc.GetString("admin-verb-text-make-malf"),
+            Category = VerbCategory.Antag,
+            Icon = new SpriteSpecifier.Rsi(new ResPath("/Textures/Clothing/Hands/Gloves/Color/black.rsi"), "icon"),
+            Act = () =>
+            {
+                _antag.ForceMakeAntag<MalfRuleComponent>(targetPlayer, DefaultMalfRule);
+            },
+            Impact = LogImpact.High,
+            Message = Loc.GetString("admin-verb-make-malf")
+        };
+        args.Verbs.Add(malf);
     }
 }
